@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: my_node_app
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run distribute
+
+  mongo:
+    image: mongo:latest
+    container_name: my_mongo_db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+volumes:
+  mongo_data:
