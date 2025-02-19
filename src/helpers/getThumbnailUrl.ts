@@ -3,9 +3,10 @@ import * as uuid from 'uuid'
 import { cwd } from 'process'
 import { resolve } from 'path'
 import DownloadedFileInfo from '@/models/DownloadedFileInfo'
-import TurboDownloader from 'turbo-downloader'
 import env from '@/helpers/env'
 import unlincSyncSafe from '@/helpers/unlincSyncSafe'
+import { createWriteStream } from 'fs';
+import axios from 'axios';
 import ffmpeg = require('fluent-ffmpeg')
 
 const tempDir = env.isDevelopment
@@ -39,14 +40,20 @@ export default async function getThumbnailUrl(
   return thumbPathDone
 }
 
-async function downloadThumbnail(url: string, id: string) {
-  const destFile = resolve(tempDir, `${id}`)
-  const downloader = new TurboDownloader({
+async function downloadThumbnail(url: string, id: string): Promise<string> {
+  const destFile = resolve(tempDir, `${id}`);
+  const response = await axios({
     url,
-    destFile,
-  })
-  await downloader.download()
-  return destFile
+    method: 'GET',
+    responseType: 'stream',
+  });
+
+  response.data.pipe(createWriteStream(destFile));
+
+  return new Promise<string>((resolve, reject) => {
+    response.data.on('end', () => resolve(destFile));
+    response.data.on('error', reject);
+  });
 }
 
 function makeThumbnail(videoPath: string, filename: string) {
@@ -60,7 +67,9 @@ function makeThumbnail(videoPath: string, filename: string) {
       .on('error', (error) => {
         rej(error)
       })
-      .on('end', res)
+      .on('end', (_stdout: string | null, _stderr: string | null) => {
+        res()
+      })
   })
 }
 
