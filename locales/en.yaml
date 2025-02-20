@@ -7,22 +7,22 @@ help: |
   /help — this message
   /language — change language
   /audio — convert all files to audio
+  
+  🤖 Bot created using <a href="https://github.com/Borodutch/VideoDownloadBot">VideoDownloadBot</a>.  
+  Special thanks to @Borodutch for the source code! 🎉
 
-  Questions, feedback 👉 @borodutch_support.
-
-  Do you want to support the bot's author? I wrote a scientific book about how to live healthier and happier! You can buy it on Amazon — amazon.com/dp/B0CHL7WRYM or on the book's website — wdlaty.com. Thank you!
 language: 😶 Please, select the language.
 language_selected: 😎 I speak English now.
 audio_on: 📣 I will convert all files to audio-only automatically.
 audio_off: 🎥 I will not convert all files to audio-only automatically.
 # User-facing progress messages
-download_started: 😍 Downloading...
-uploading_started: 🤘 Uploading...
+download_started: Downloading...
+uploading_started: Uploading...
 download_complete: 🎉 Download complete!
 # Caption for completed video
 video_caption: |
   <b>${title}</b>
-  Downloaded with @${bot} — <a href="https://wdlaty.com">Check out my book</a>
+
 # Errors
 error_cannot_start_download: 😱 I couldn't start the download.
 error_invalid_url: 😱 I couldn't find a video with that link.
