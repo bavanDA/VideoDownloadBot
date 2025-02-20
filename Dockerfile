@@ -4,6 +4,9 @@ FROM node:18
 # Set the working directory
 WORKDIR /app
 
+# Install FFmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 # Copy package.json and package-lock.json first
 COPY package*.json ./
 COPY tsconfig.json ./
