@@ -31,9 +31,9 @@
     "node-fetch": "^3.3.2",
     "random-token": "^0.0.8",
     "rimraf": "^3.0.2",
-    "sharp": "^0.32.0",
+    "sharp": "^0.33.5",
     "uuid": "^8.3.2",
-    "youtube-dl-exec": "^3.0.7"
+    "youtube-dl-exec": "^3.0.15"
   },
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.20",

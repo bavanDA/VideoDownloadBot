@@ -1,4 +1,4 @@
-import { Agent } from 'https'
+import { Agent } from 'http'
 import { Bot } from 'grammy'
 import Context from '@/models/Context'
 import env from '@/helpers/env'

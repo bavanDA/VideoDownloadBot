@@ -5,8 +5,8 @@ import { resolve } from 'path'
 import DownloadedFileInfo from '@/models/DownloadedFileInfo'
 import env from '@/helpers/env'
 import unlincSyncSafe from '@/helpers/unlincSyncSafe'
-import { createWriteStream } from 'fs';
-import axios from 'axios';
+import { createWriteStream } from 'fs'
+import axios from 'axios'
 import ffmpeg = require('fluent-ffmpeg')
 
 const tempDir = env.isDevelopment
@@ -27,6 +27,7 @@ export default async function getThumbnailUrl(
   }
 
   let thumbnailPath = ''
+
   if (!thumbnailUrl) {
     const thumbName = `${thumbnailUuid}.jpeg`
     thumbnailPath = resolve(tempDir, thumbName)
@@ -34,6 +35,7 @@ export default async function getThumbnailUrl(
   } else {
     thumbnailPath = await downloadThumbnail(thumbnailUrl, thumbnailUuid)
   }
+
   const outputPath = resolve(tempDir, `${thumbnailUuid}-resized.jpeg`)
   const thumbPathDone = await resizeThumb(thumbnailPath, outputPath)
   unlincSyncSafe(thumbnailPath)
@@ -41,19 +43,19 @@ export default async function getThumbnailUrl(
 }
 
 async function downloadThumbnail(url: string, id: string): Promise<string> {
-  const destFile = resolve(tempDir, `${id}`);
+  const destFile = resolve(tempDir, `${id}`)
   const response = await axios({
     url,
     method: 'GET',
     responseType: 'stream',
-  });
+  })
 
-  response.data.pipe(createWriteStream(destFile));
+  response.data.pipe(createWriteStream(destFile))
 
   return new Promise<string>((resolve, reject) => {
-    response.data.on('end', () => resolve(destFile));
-    response.data.on('error', reject);
-  });
+    response.data.on('end', () => resolve(destFile))
+    response.data.on('error', reject)
+  })
 }
 
 function makeThumbnail(videoPath: string, filename: string) {

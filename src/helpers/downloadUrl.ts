@@ -36,8 +36,8 @@ export default async function downloadUrl(
       youtubeSkipDashManifest: true,
       noPlaylist: true,
       format: downloadJob.audio
-        ? 'bestaudio[filesize<=2G]/bestaudio[filesize_approx<=2G]/[filesize<=2G]/[filesize_approx<=2G]'
-        : '[filesize<=2G][ext=mp4]/[filesize_approx<=2G][ext=mp4]/[filesize<=2G]/[filesize_approx<=2G]/best',
+        ? 'bestvideo[filesize<=500M][ext=mp4]+bestaudio[filesize<=500M][ext=mp4]/best[filesize<=500M][ext=mp4]'
+        : '[filesize<=500M][ext=mp4]/[filesize_approx<=500M][ext=mp4]/[filesize<=500M]/[filesize_approx<=500M]/best',
       maxFilesize: '2048m',
       noCallHome: true,
       noProgress: true,
@@ -47,6 +47,7 @@ export default async function downloadUrl(
       noPart: true,
       cookies: resolve(cwd(), 'cookie'),
       recodeVideo: 'mp4',
+      netrc: true,
     }
     const downloadedFileInfo: DownloadedFileInfo = await youtubedl(
       downloadJob.url,
@@ -91,6 +92,8 @@ export default async function downloadUrl(
   } catch (error) {
     if (downloadJob.status === DownloadJobStatus.downloading) {
       if (error instanceof Error) {
+        console.log(error.message)
+
         if (error.message.includes('Unsupported URL')) {
           downloadJob.status = DownloadJobStatus.unsupportedUrl
         } else if (
@@ -107,10 +110,10 @@ export default async function downloadUrl(
     await downloadJob.save()
     report(error, { location: 'downloadUrl', meta: downloadJob.url })
   } finally {
-    rimraf(`${tempDir}/${fileUuid}*`, (error) => {
-      if (error) {
-        report(error, { location: 'deleting temp files' })
-      }
-    })
+    // rimraf(`${tempDir}/${fileUuid}*`, (error) => {
+    //   if (error) {
+    //     report(error, { location: "deleting temp files" });
+    //   }
+    // });
   }
 }

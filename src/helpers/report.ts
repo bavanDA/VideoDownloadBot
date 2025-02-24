@@ -31,7 +31,7 @@ function constructErrorMessage(
 ) {
   const { message } = error
   const chatInfo =
-    ctx?.chat?.id || ctx?.callbackQuery?.message?.chat.id
+    ctx?.chat?.id
       ? [`Chat <b>${ctx.chat?.id || ctx.callbackQuery?.message?.chat.id}</b>`]
       : []
   if (ctx?.chat && 'username' in ctx.chat) {
@@ -55,7 +55,7 @@ async function sendToTelegramAdmin(error: Error, info: ExtraErrorInfo) {
     }
     const message = constructErrorMessage(error, info)
     await bot.api.sendMessage(env.ADMIN_ID, message, {
-      parse_mode: 'HTML'
+      parse_mode: 'HTML',
     })
     if (info.ctx) {
       await info.ctx.forwardMessage(env.ADMIN_ID)
@@ -67,11 +67,11 @@ async function sendToTelegramAdmin(error: Error, info: ExtraErrorInfo) {
 
 export default function report(error: unknown, info: ExtraErrorInfo = {}) {
   console.error(error, info)
-  // if (error instanceof Error) {
-  //   void sendToTelegramAdmin(error, info)
-  // } else if (typeof error === 'string') {
-  //   void sendToTelegramAdmin(new Error(error), info)
-  // }
+  if (error instanceof Error) {
+    void sendToTelegramAdmin(error, info)
+  } else if (typeof error === 'string') {
+    void sendToTelegramAdmin(new Error(error), info)
+  }
 }
 
 function escape(s = '') {
