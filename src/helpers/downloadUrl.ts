@@ -127,10 +127,10 @@ export default async function downloadUrl(
 
     report(error, { location: 'downloadUrl', meta: downloadJob.url })
   } finally {
-    // rimraf(`${tempDir}/${fileUuid}*`, (error) => {
-    //   if (error) {
-    //     report(error, { location: 'deleting temp files' })
-    //   }
-    // })
+    rimraf(`${tempDir}/${fileUuid}*`, (error) => {
+      if (error) {
+        report(error, { location: 'deleting temp files' })
+      }
+    })
   }
 }
