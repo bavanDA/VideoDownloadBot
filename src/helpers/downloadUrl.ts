@@ -29,6 +29,14 @@ export default async function downloadUrl(
   try {
     console.log(`Downloading url ${downloadJob.url}`)
     // Download
+
+    const forceGenericSites = ['gamespot.com']
+
+    let isForceGeneric = false
+
+    for (const site of forceGenericSites)
+      if (downloadJob.url.includes(site)) isForceGeneric = true
+
     const config = {
       dumpSingleJson: true,
       noWarnings: true,
@@ -37,7 +45,7 @@ export default async function downloadUrl(
       noPlaylist: true,
       format: downloadJob.audio
         ? 'bestaudio[filesize<=2GB]/best'
-        : 'bestvideo[filesize<=2GB]+bestaudio[filesize<=2GB]/best',
+        : 'bestvideo[filesize<=2GB][height<1080]+bestaudio[filesize<=2GB]/best',
       maxFilesize: '2048m',
       noCallHome: true,
       noProgress: true,
@@ -48,6 +56,7 @@ export default async function downloadUrl(
       cookies: resolve(cwd(), 'cookie'),
       recodeVideo: 'mp4',
       netrc: true,
+      forceGenericExtractor: true,
     }
     const downloadedFileInfo: DownloadedFileInfo = await youtubedl(
       downloadJob.url,

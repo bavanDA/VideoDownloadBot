@@ -1309,10 +1309,10 @@
   "resolved" "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
   "version" "1.5.1"
 
-"bin-version-check@~6.0.0":
-  "integrity" "sha512-k9TS/pADINX9UlErjAkbkxDer8C+WlguMwySI8sLMGLUMDvwuHmDx00yoHe7nxshgwtLBcMWQgrlwjzscUeQKg=="
-  "resolved" "https://registry.npmjs.org/bin-version-check/-/bin-version-check-6.0.0.tgz"
-  "version" "6.0.0"
+"binary-version-check@~6.1.0":
+  "integrity" "sha512-REKdLKmuViV2WrtWXvNSiPX04KbIjfUV3Cy8batUeOg+FtmowavzJorfFhWq95cVJzINnL/44ixP26TrdJZACA=="
+  "resolved" "https://registry.npmjs.org/binary-version-check/-/binary-version-check-6.1.0.tgz"
+  "version" "6.1.0"
   dependencies:
     "binary-version" "^7.1.0"
     "semver" "^7.6.0"
@@ -3888,12 +3888,12 @@
   "resolved" "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
 
-"youtube-dl-exec@^3.0.15":
-  "integrity" "sha512-QVXOxeUSeID8UzE+HmQ5TN7xDMf0xI22MUslb3n/jTHTd8uXw2F9wbCR+I34HFZcNKY6qxTcmDy6REbJAMPing=="
-  "resolved" "https://registry.npmjs.org/youtube-dl-exec/-/youtube-dl-exec-3.0.15.tgz"
-  "version" "3.0.15"
+"youtube-dl-exec@^3.0.16":
+  "integrity" "sha512-bfwCyf/B/5yDv2Gg0pedB2hQ1PncJGrNfuBa82Kgyl8+drbTZqjm0GLr7NkLn3vWdBpTH9X93L8AwvLXhZWVsw=="
+  "resolved" "https://registry.npmjs.org/youtube-dl-exec/-/youtube-dl-exec-3.0.16.tgz"
+  "version" "3.0.16"
   dependencies:
-    "bin-version-check" "~6.0.0"
+    "binary-version-check" "~6.1.0"
     "dargs" "~7.0.0"
     "debug-logfmt" "~1.2.2"
     "is-unix" "~2.0.10"

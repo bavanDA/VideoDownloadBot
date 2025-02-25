@@ -11,7 +11,7 @@ export default function handleUrl(ctx: Context) {
       return ctx.replyWithLocalization('error_invalid_url')
     }
     const url = match[0]
-    return createDownloadJobAndRequest(ctx, url)
+    return createDownloadJobAndRequest(ctx, 'https://' + url)
   } catch (error) {
     report(error, { ctx, location: 'handleUrl' })
     return ctx.replyWithLocalization('error_cannot_start_download')
