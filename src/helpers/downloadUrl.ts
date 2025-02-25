@@ -56,8 +56,9 @@ export default async function downloadUrl(
       cookies: resolve(cwd(), 'cookie'),
       recodeVideo: 'mp4',
       netrc: true,
-      forceGenericExtractor: true,
+      forceGenericExtractor: isForceGeneric,
     }
+
     const downloadedFileInfo: DownloadedFileInfo = await youtubedl(
       downloadJob.url,
       config
