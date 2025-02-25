@@ -12,7 +12,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: npm run distribute
+      - ./video-downloads:/var/tmp/video-download-bot
+    command: sh -c "umask 000 && npm run distribute"
 
   mongo:
     image: mongo:latest
