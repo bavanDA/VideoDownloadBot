@@ -30,10 +30,9 @@ export default async function downloadUrl(
     console.log(`Downloading url ${downloadJob.url}`)
     // Download
 
-    const forceGenericSites = ['gamespot.com']
+    const forceGenericSites = env.GENERIC_WEBS.split(',')
 
     let isForceGeneric = false
-
     for (const site of forceGenericSites)
       if (downloadJob.url.includes(site)) isForceGeneric = true
 
@@ -56,7 +55,7 @@ export default async function downloadUrl(
       cookies: resolve(cwd(), 'cookie'),
       recodeVideo: 'mp4',
       netrc: true,
-      forceGenericExtractor: isForceGeneric,
+      ...(isForceGeneric && { forceGenericExtractor: true }),
     }
 
     const downloadedFileInfo: DownloadedFileInfo = await youtubedl(

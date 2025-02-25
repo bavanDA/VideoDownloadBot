@@ -1,7 +1,7 @@
 import Context from '@/models/Context'
 import createDownloadJobAndRequest from '@/helpers/createDownloadJobAndRequest'
 import report from '@/helpers/report'
-
+import env from '@/helpers/env'
 export default function handleUrl(ctx: Context) {
   try {
     const match = ctx.message?.text?.match(
@@ -11,7 +11,16 @@ export default function handleUrl(ctx: Context) {
       return ctx.replyWithLocalization('error_invalid_url')
     }
     const url = match[0]
-    return createDownloadJobAndRequest(ctx, 'https://' + url)
+    const forceGenericSites = env.GENERIC_WEBS.split(',')
+
+    let isForceGeneric = false
+    for (const site of forceGenericSites)
+      if (url.includes(site)) isForceGeneric = true
+
+    return createDownloadJobAndRequest(
+      ctx,
+      isForceGeneric ? 'https://' + url : url
+    )
   } catch (error) {
     report(error, { ctx, location: 'handleUrl' })
     return ctx.replyWithLocalization('error_cannot_start_download')
