@@ -9,6 +9,6 @@ dotenv.config({ path: resolve(cwd(), '.env') })
 export default cleanEnv(process.env, {
   TOKEN: str(),
   MONGO: str(),
-  ADMIN_ID: num(),
+  CHANNEL_ID: str(),
   BOT_API_URL: str({ default: 'https://api.telegram.org' }),
 })

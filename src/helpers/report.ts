@@ -30,13 +30,20 @@ function constructErrorMessage(
   { ctx, location, meta }: ExtraErrorInfo
 ) {
   const { message } = error
-  const chatInfo =
-    ctx?.chat?.id
-      ? [`Chat <b>${ctx.chat?.id || ctx.callbackQuery?.message?.chat.id}</b>`]
-      : []
-  if (ctx?.chat && 'username' in ctx.chat) {
+  const chatInfo = ctx?.chat?.id
+    ? [`Chat <b>${ctx.chat.id}</b>`]  // Safely access chat.id
+    : []
+  
+  // If ctx.chat exists, add the username if it's available
+  if (ctx?.chat?.username) {
     chatInfo.push(`@${ctx.chat.username}`)
   }
+  
+  // If ctx.callbackQuery exists and contains message with chat info, include it
+  if (ctx?.callbackQuery?.message?.chat?.id) {
+    chatInfo.push(`Callback Chat <b>${ctx.callbackQuery.message.chat.id}</b>`)
+  }
+
   const result = `${
     location ? `<b>${escape(location)}</b>${ctx ? '\n' : ''}` : ''
   }${chatInfo.filter((v) => !!v).join(', ')}\n${escape(message)}${
@@ -45,20 +52,24 @@ function constructErrorMessage(
   return result
 }
 
-async function sendToTelegramAdmin(error: Error, info: ExtraErrorInfo) {
+async function sendToTelegramChannel(error: Error, info: ExtraErrorInfo) {
   try {
+    // Skip known ignored error messages
     if (
       !env.isDevelopment &&
       ignoredMessages.find((m) => error.message.includes(m))
     ) {
       return
     }
+
     const message = constructErrorMessage(error, info)
-    await bot.api.sendMessage(env.ADMIN_ID, message, {
+    await bot.api.sendMessage(env.CHANNEL_ID, message, {
       parse_mode: 'HTML',
     })
-    if (info.ctx) {
-      await info.ctx.forwardMessage(env.ADMIN_ID)
+
+    // Only attempt to forward message if ctx exists and ctx.forwardMessage is defined
+    if (info.ctx && info.ctx.forwardMessage) {
+      await info.ctx.forwardMessage(env.CHANNEL_ID)
     }
   } catch (sendError) {
     console.error('Error reporting:', sendError)
@@ -68,9 +79,9 @@ async function sendToTelegramAdmin(error: Error, info: ExtraErrorInfo) {
 export default function report(error: unknown, info: ExtraErrorInfo = {}) {
   console.error(error, info)
   if (error instanceof Error) {
-    void sendToTelegramAdmin(error, info)
+    void sendToTelegramChannel(error, info)
   } else if (typeof error === 'string') {
-    void sendToTelegramAdmin(new Error(error), info)
+    void sendToTelegramChannel(new Error(error), info)
   }
 }
 

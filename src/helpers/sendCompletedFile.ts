@@ -23,15 +23,26 @@ export default async function sendCompletedFile(
     thumb: audio ? undefined : thumb,
     supports_streaming: true,
   }
+
   let sentMessage:
     | Message.DocumentMessage
     | Message.AudioMessage
     | Message.VideoMessage
   const botToSendMessage = file instanceof InputFile ? videoUploadBot : bot
+
   try {
-    sentMessage = audio
-      ? await botToSendMessage.api.sendAudio(chatId, file, sendDocumentConfig)
-      : await botToSendMessage.api.sendVideo(chatId, file, sendDocumentConfig)
+    if (audio) {
+      sentMessage = await botToSendMessage.api.sendAudio(
+        chatId,
+        file,
+        sendDocumentConfig
+      )
+    } else
+      sentMessage = await botToSendMessage.api.sendVideo(
+        chatId,
+        file,
+        sendDocumentConfig
+      )
   } catch (error) {
     sentMessage = await botToSendMessage.api.sendDocument(
       chatId,
@@ -39,10 +50,12 @@ export default async function sendCompletedFile(
       sendDocumentConfig
     )
   }
+
   const fileId =
     ('video' in sentMessage && sentMessage.video.file_id) ||
     ('audio' in sentMessage && sentMessage.audio.file_id) ||
     ('document' in sentMessage && sentMessage.document.file_id)
+
   if (!fileId) {
     throw new Error('File id not found')
   }

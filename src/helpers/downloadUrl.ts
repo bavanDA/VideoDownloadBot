@@ -36,13 +36,13 @@ export default async function downloadUrl(
       youtubeSkipDashManifest: true,
       noPlaylist: true,
       format: downloadJob.audio
-        ? 'bestvideo[filesize<=500M][ext=mp4]+bestaudio[filesize<=500M][ext=mp4]/best[filesize<=500M][ext=mp4]'
-        : '[filesize<=500M][ext=mp4]/[filesize_approx<=500M][ext=mp4]/[filesize<=500M]/[filesize_approx<=500M]/best',
+        ? 'bestaudio[filesize<=2GB]/best'
+        : 'bestvideo[filesize<=2GB]+bestaudio[filesize<=2GB]/best',
       maxFilesize: '2048m',
       noCallHome: true,
       noProgress: true,
       output: `${tempDir}/${fileUuid}.%(ext)s`,
-      mergeOutputFormat: 'mkv',
+      mergeOutputFormat: 'mp4',
       noCacheDir: true,
       noPart: true,
       cookies: resolve(cwd(), 'cookie'),
@@ -54,19 +54,24 @@ export default async function downloadUrl(
       config
     )
     const title = downloadedFileInfo.title
-    const ext =
-      downloadedFileInfo.ext || downloadedFileInfo.entries?.[0]?.ext || 'mkv'
     const escapedTitle = (title || '').replace('<', '&lt;').replace('>', '&gt;')
-    const filePath = `${tempDir}/${fileUuid}.${ext}`
+    const filePath = `${tempDir}/${fileUuid}.mp4`
+    console.log(`Downloaded ${downloadJob.url} to ${filePath}`)
     await youtubedl(downloadJob.url, omit(config, 'dumpSingleJson'))
+
     // Upload
     downloadJob.status = DownloadJobStatus.uploading
     await downloadJob.save()
-    const file = new InputFile(filePath)
+
+    const file = new InputFile(filePath, escapedTitle)
     const { doc: originalChat } = await findOrCreateChat(
       downloadJob.originalChatId
     )
-    const thumb = await getThumbnailUrl(downloadedFileInfo, filePath)
+
+    const thumb = downloadJob.audio
+      ? undefined
+      : await getThumbnailUrl(downloadedFileInfo, filePath)
+
     const fileId = await sendCompletedFile(
       downloadJob.originalChatId,
       downloadJob.originalMessageId,
@@ -76,9 +81,10 @@ export default async function downloadUrl(
       file,
       thumb ? new InputFile(thumb) : undefined
     )
+
     // Cleanup
-    await unlincSyncSafe(filePath)
-    await unlincSyncSafe(thumb)
+    // await unlincSyncSafe(filePath)
+    if (thumb) await unlincSyncSafe(thumb)
 
     // Finished
     await findOrCreateUrl(
@@ -88,6 +94,7 @@ export default async function downloadUrl(
       escapedTitle || 'No title'
     )
     downloadJob.status = DownloadJobStatus.finished
+
     await downloadJob.save()
   } catch (error) {
     if (downloadJob.status === DownloadJobStatus.downloading) {
@@ -108,12 +115,13 @@ export default async function downloadUrl(
       downloadJob.status = DownloadJobStatus.failedUpload
     }
     await downloadJob.save()
+
     report(error, { location: 'downloadUrl', meta: downloadJob.url })
   } finally {
     // rimraf(`${tempDir}/${fileUuid}*`, (error) => {
     //   if (error) {
-    //     report(error, { location: "deleting temp files" });
+    //     report(error, { location: 'deleting temp files' })
     //   }
-    // });
+    // })
   }
 }
